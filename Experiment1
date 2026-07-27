@@ -1,0 +1,90 @@
+Feature selection Forward and backward , sequentialfeatureselector , logisticregression , pandas, find accuracy
+import pandas as pd
+from sklearn.datasets import make_classification
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+X_raw, y = make_classification(
+    n_samples=150, 
+    n_features=10, 
+    n_informative=4, 
+    n_redundant=4, 
+    random_state=42
+)
+feature_names = [f"feature_{i+1}" for i in range(10)]
+X = pd.DataFrame(X_raw, columns=feature_names)
+model = LogisticRegression(solver='liblinear')
+baseline_acc = cross_val_score(model, X, y, cv=3, scoring='accuracy').mean()
+sfs = SequentialFeatureSelector(
+    model, 
+    n_features_to_select='auto', 
+    direction='forward', 
+    cv=3
+)
+sfs.fit(X, y)
+selected_features = list(X.columns[sfs.get_support()])
+X_selected = sfs.transform(X)
+selected_acc = cross_val_score(model, X_selected, y, cv=3, scoring='accuracy').mean()
+print("Selected features:", selected_features)
+print(f"Baseline Accuracy (All Features): {baseline_acc * 100:.2f}%")
+print(f"Selected Accuracy ({len(selected_features)} Features): {selected_acc * 100:.2f}%")
+OUTPUT-
+Selected features: ['feature_1', 'feature_2', 'feature_7', 'feature_8', 'feature_10']
+Baseline Accuracy (All Features): 77.33%
+Selected Accuracy (5 Features): 75.33%
+
+
+
+
+Take a labelled dataset apply any supervised ml algorithm on the dataset
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+data = load_breast_cancer()
+X = pd.DataFrame(data.data, columns=data.feature_names)
+y = pd.Series(data.target)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+acc = accuracy_score(y_test, y_pred)
+print(f"Test Accuracy: {acc * 100:.2f}%")
+OUTPUT-
+Test Accuracy: 96.49%
+
+
+
+
+Take a unlabelled datset and apply any unsupervised ml aqlgorithmon the dataset
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+from sklearn.metrics import silhouette_score
+X_raw, _ = make_blobs(
+    n_samples=300, 
+    centers=4, 
+    cluster_std=0.8, 
+    random_state=42
+)
+X = pd.DataFrame(X_raw, columns=['feature_1', 'feature_2'])
+kmeans = KMeans(n_clusters=4, random_state=42, n_init=10)
+X['cluster_label'] = kmeans.fit_predict(X)
+score = silhouette_score(X[['feature_1', 'feature_2']], X['cluster_label'])
+print("First 5 rows with predicted clusters:")
+print(X.head())
+print(f"\nSilhouette Score: {score:.3f}")
+
+OUTPUT-
+First 5 rows with predicted clusters:
+   feature_1  feature_2  cluster_label
+0  -9.205816   6.643647              3
+1  -9.526658   7.015878              3
+2  -1.851162   8.037611              0
+3  -7.053772  -6.001088              1
+4 -10.468827   6.517054              3
+
+Silhouette Score: 0.834
