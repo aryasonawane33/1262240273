@@ -1,0 +1,22 @@
+Train the system using data set obtained from UCI ML repository. Use a partition of the same data set as a test set to determine accuracy using RandomForest.
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score
+df = pd.read_excel("Housing.xlsx")
+df = pd.get_dummies(df, drop_first=True)
+x = df.drop("price", axis=1)
+y = df["price"]
+x1,x2,y1,y2 = train_test_split(x,y,test_size=0.2,random_state=42)
+m = RandomForestRegressor(n_estimators=100,random_state=42)
+m.fit(x1,y1)
+p = m.predict(x2)
+a = r2_score(y2,p)
+print("R2 Accuracy:",a)
+print("R2 Accuracy:",a*100,"%")
+
+
+OUTPUT-
+R2 Accuracy: 0.611918531405699
+R2 Accuracy: 61.1918531405699 %
