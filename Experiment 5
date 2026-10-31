@@ -1,0 +1,26 @@
+ Experiment No 5. Implement Find-S algorithm. 
+import pandas as pd
+
+d = {
+    'Sky': ['Sunny', 'Sunny', 'Rainy', 'Sunny'],
+    'Temp': ['Warm', 'Warm', 'Cold', 'Warm'],
+    'Humidity': ['Normal', 'High', 'High', 'Normal'],
+    'Wind': ['Strong', 'Strong', 'Strong', 'Weak'],
+    'Enjoy': ['Yes', 'Yes', 'No', 'Yes']
+}
+
+df = pd.DataFrame(d)
+
+h = ['0', '0', '0', '0']
+
+for i, r in df.iterrows():
+    if r['Enjoy'] == 'Yes':
+        for j in range(4):
+            if h[j] == '0':
+                h[j] = r.iloc[j]
+            elif h[j] != r.iloc[j]:
+                h[j] = '?'
+
+print("Final Hypothesis:", h)
+
+Final Hypothesis: ['Sunny', 'Warm', '?', '?']
